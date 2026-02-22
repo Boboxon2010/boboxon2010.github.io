@@ -547,7 +547,6 @@
           <span class="pill">Django</span>
           <span class="pill">PostgreSQL</span>
           <span class="pill">Docker</span>
-          <span class="pill">Linux</span>
           <span class="pill">Automation</span>
         </div>
       </div>
@@ -572,7 +571,6 @@
         <div class="sectionTitle">
           <div>
             <h2>Men haqimda</h2>
-            <p>Short bio + background</p>
           </div>
           <span class="tag">About</span>
         </div>
@@ -585,12 +583,13 @@
             <p class="v" style="line-height:1.7; color:rgba(255,255,255,.86)">
               Mening ismim <b>Jumaboyev Boboxon</b>. 3 yildan buyon dasturlash sohasida
               <b>Al-Xorazmiy Vorislari</b> loyihasida qatnashib, bilimlarimni oshirib kelmoqdaman.
-              Hozirda <b>Python</b>, <b>HTML</b>, <b>CSS</b> va <b>JavaScript</b> yo‘nalishlarida ishlayman.
+              Hozirda <b>Python</b>, <b>HTML</b>, <b>CSS</b> va <b>JavaScript</b> yo‘nalishlarida o'qiyapman.
             </p>
             <div class="pillrow" style="margin-top:14px">
               <span class="pill">Clean Architecture</span>
               <span class="pill">Automation</span>
               <span class="pill">Backend Engineering</span>
+              <span class="pill">Python Programming</span>
             </div>
           </div>
         </div>
@@ -612,7 +611,7 @@
           <div class="skill" data-skill="95">
             <div class="skillTop">
               <div class="skillName"><span>HTML</span></div>
-              <div class="skillPct">95%</div>
+              <div class="skillPct">70%</div>
             </div>
             <div class="bar"><div></div></div>
           </div>
@@ -620,7 +619,7 @@
           <div class="skill" data-skill="85">
             <div class="skillTop">
               <div class="skillName"><span>CSS</span></div>
-              <div class="skillPct">85%</div>
+              <div class="skillPct">80%</div>
             </div>
             <div class="bar"><div></div></div>
           </div>
@@ -628,7 +627,7 @@
           <div class="skill" data-skill="65">
             <div class="skillTop">
               <div class="skillName"><span>JavaScript</span></div>
-              <div class="skillPct">65%</div>
+              <div class="skillPct">55%</div>
             </div>
             <div class="bar"><div></div></div>
           </div>
@@ -636,7 +635,7 @@
           <div class="skill" data-skill="75">
             <div class="skillTop">
               <div class="skillName"><img src="assets/img/python_icon.png" alt="" /><span>Python</span></div>
-              <div class="skillPct">75%</div>
+              <div class="skillPct">95%</div>
             </div>
             <div class="bar"><div></div></div>
           </div>
@@ -652,7 +651,6 @@
             <h2>Projects</h2>
             <p>Auto-loaded GitHub stats (stars/forks)</p>
           </div>
-          <span class="tag">Final Boss</span>
         </div>
 
         <div class="proj" data-tilt data-repo="Boboxon2010/robocontest-tasks">
@@ -911,6 +909,12 @@
         mount.innerHTML = `<span class="stat">Stats: unavailable</span>`;
       }
     }
+    const REPOS = [
+  "robocontest-tasks",
+  "Telegram_bot-krill-lotin-krill-translater",
+  "Mening-Loyihalarim"
+];
+    const USER = "Boboxon2010";
 
     document.querySelectorAll('[data-repo]').forEach(card=>{
       const repo = card.getAttribute('data-repo');
