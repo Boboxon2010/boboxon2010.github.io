@@ -294,7 +294,7 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      margin: 0 0 10px;
+      margin: 0 0 16px;
     }
     .sectionTitle h2{ margin:0; font-size:16px; letter-spacing:.2px; }
     .sectionTitle p{ margin:0; color:var(--muted); font-size:12px; }
@@ -341,45 +341,82 @@
       transition: width 1.1s ease;
     }
 
-    /* Projects */
-    .proj{
-      display:flex; gap:14px; align-items:flex-start;
-      padding:16px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
-      transform-style: preserve-3d;
-      position:relative;
-      overflow:hidden;
+    /* ===== NEW LIVE PROJECTS IFRAME GRID ===== */
+    .projectsLiveGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 10px;
     }
-    .proj::after{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(600px 240px at var(--mx,50%) var(--my,30%), rgba(255,255,255,.20), transparent 60%);
-      opacity:0;
-      transition: opacity .18s ease;
-      pointer-events:none;
-    }
-    .proj:hover::after{ opacity:1; }
-    .proj:hover{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); box-shadow: var(--shadow2); }
 
-    .dot{ width:12px; height:12px; border-radius:50%; margin-top:5px; background: linear-gradient(135deg, var(--a), var(--b)); box-shadow: 0 10px 26px rgba(0,242,96,.22); flex:0 0 auto; }
-    .proj h3{ margin:0; font-size:15px; }
-    .proj p{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.5; }
-    .proj a{ color:inherit; text-decoration:none; }
-
-    .metaRow{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .tag{ font-size:11px; color:rgba(255,255,255,.78); border:1px solid rgba(255,255,255,.14); padding:6px 10px; border-radius:999px; background: rgba(255,255,255,.03); }
-
-    .repoStats{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .stat{
-      font-size:11px;
-      color: rgba(255,255,255,.80);
-      border:1px solid rgba(255,255,255,.14);
+    .proj-card-live {
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.03);
-      padding:6px 10px;
-      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      transition: border-color .22s ease, box-shadow .22s ease, background .22s ease;
+      position: relative;
+    }
+
+    .proj-card-live:hover {
+      background: rgba(255,255,255,.05);
+      border-color: rgba(0,242,96,.4);
+      box-shadow: var(--shadow2);
+    }
+
+    /* Ixcham mini oyna / iframe sohasi */
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      height: 260px; /* Ixcham o'rtacha bo'y */
+      background: rgba(0, 0, 0, 0.4) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38" stroke="%2300F260"><g fill="none" fill-rule="evenodd"><g transform="translate(1 1)" stroke-width="2"><circle stroke-opacity=".2" cx="18" cy="18" r="18"/><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/></path></g></g></svg>') center no-repeat;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .proj-details {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .proj-details h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .proj-details p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .proj-footer-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      padding: 6px 12px;
+      font-size: 11px;
     }
 
     /* Contact */
@@ -437,7 +474,7 @@
     }
     @keyframes spin{ to{ transform: rotate(360deg); } }
 
-    /* Responsive */
+    /* Responsive adjustments */
     @media (max-width: 920px){
       .hero{ grid-template-columns: 1fr; }
       .aboutWrap{ grid-template-columns: 1fr; }
@@ -445,6 +482,15 @@
       .contactGrid{ grid-template-columns: 1fr; }
       .title{ font-size:36px; }
       .topbar{ top: 10px; }
+      
+      /* Mobil qurilmalarda 1 ta ustunga o'tish */
+      .projectsLiveGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .iframe-wrapper {
+        height: 230px; /* Mobil ekranlar uchun biroz ixchamroq */
+      }
     }
 
     /* Reduced motion */
@@ -453,41 +499,41 @@
       .aurora, .logo::after, .btn.primary, .btn.telegram, .btn.instagram, .spinner{ animation:none !important; }
       .reveal{ transition:none !important; }
     }
+    
     /* ===== Mobile nav fix ===== */
-@media (max-width: 520px){
-  header{
-    padding: 14px;
-    gap: 12px;
-  }
+    @media (max-width: 520px){
+      header{
+        padding: 14px;
+        gap: 12px;
+      }
 
-  nav{
-    width: 100%;
-    justify-content: stretch;
-    display: grid;
-    grid-template-columns: 1fr 1fr;   /* 2 ta ustun */
-    gap: 10px;
-  }
+      nav{
+        width: 100%;
+        justify-content: stretch;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
 
-  nav .btn{
-    width: 100%;
-    justify-content: center;
-    padding: 12px 10px;
-    border-radius: 16px;
-    font-size: 13px;
-  }
+      nav .btn{
+        width: 100%;
+        justify-content: center;
+        padding: 12px 10px;
+        border-radius: 16px;
+        font-size: 13px;
+      }
 
-  /* agar bitta tugma uzun bo‘lsa ham sig‘sin */
-  nav .btn{
-    white-space: nowrap;
-  }
-}
+      nav .btn{
+        white-space: nowrap;
+      }
+    }
 
-/* Juda kichik ekranlar (old telefonlar) */
-@media (max-width: 360px){
-  nav{
-    grid-template-columns: 1fr; /* 1 ustun */
-  }
-}
+    /* Juda kichik ekranlar */
+    @media (max-width: 360px){
+      nav{
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -608,7 +654,7 @@
         </div>
 
         <div class="skillsGrid">
-          <div class="skill" data-skill="95">
+          <div class="skill" data-skill="70">
             <div class="skillTop">
               <div class="skillName"><span>HTML</span></div>
               <div class="skillPct">70%</div>
@@ -616,7 +662,7 @@
             <div class="bar"><div></div></div>
           </div>
 
-          <div class="skill" data-skill="85">
+          <div class="skill" data-skill="80">
             <div class="skillTop">
               <div class="skillName"><span>CSS</span></div>
               <div class="skillPct">80%</div>
@@ -624,7 +670,7 @@
             <div class="bar"><div></div></div>
           </div>
 
-          <div class="skill" data-skill="65">
+          <div class="skill" data-skill="55">
             <div class="skillTop">
               <div class="skillName"><span>JavaScript</span></div>
               <div class="skillPct">55%</div>
@@ -632,7 +678,7 @@
             <div class="bar"><div></div></div>
           </div>
 
-          <div class="skill" data-skill="75">
+          <div class="skill" data-skill="95">
             <div class="skillTop">
               <div class="skillName"><img src="assets/img/python_icon.png" alt="" /><span>Python</span></div>
               <div class="skillPct">95%</div>
@@ -643,59 +689,92 @@
       </div>
     </section>
 
-    <!-- Projects / Work -->
+    <!-- Projects / Work (YANGILANGAN IFRAME PREVIEW VERSIYASI) -->
     <section id="projects" class="grid">
       <div class="shell shine card reveal span12">
         <div class="sectionTitle">
           <div>
             <h2>Projects</h2>
-            <p>Auto-loaded GitHub stats (stars/forks)</p>
+            <p>Jonli ilovalar (Live Previews) + Avtomatik GitHub Stats</p>
           </div>
+          <span class="tag">Portfolio</span>
         </div>
 
-        <div class="proj" data-tilt data-repo="Boboxon2010/robocontest-tasks">
-          <div class="dot"></div>
-          <div>
-            <h3><a href="https://github.com/Boboxon2010/robocontest-tasks" target="_blank" rel="noreferrer">Robocontest Tasks</a></h3>
-            <p>Robocontest.uz masalalari — algoritm va yechimlar.</p>
-            <div class="metaRow">
-              <span class="tag">Python</span>
-              <span class="tag">Algorithms</span>
-              <span class="tag">DSA</span>
+        <div class="projectsLiveGrid">
+          
+          <!-- 1-Loyiha: QuantumPulse ERP -->
+          <div class="proj-card-live" data-repo="Boboxon2010/quantumpulse-erp">
+            <div class="iframe-wrapper">
+              <iframe src="https://boboxon2010.github.io/quantumpulse-erp" loading="lazy" title="QuantumPulse ERP"></iframe>
             </div>
-            <div class="repoStats" aria-label="Repo stats"></div>
-          </div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="proj" data-tilt data-repo="Boboxon2010/Mening-Loyihalarim">
-          <div class="dot"></div>
-          <div>
-            <h3><a href="https://github.com/Boboxon2010/Mening-Loyihalarim" target="_blank" rel="noreferrer">Mening Loyihalarim</a></h3>
-            <p>Shaxsiy loyihalar to‘plami.</p>
-            <div class="metaRow">
-              <span class="tag">Portfolio</span>
-              <span class="tag">Mixed</span>
-            </div>
-            <div class="repoStats" aria-label="Repo stats"></div>
-          </div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="proj" data-tilt>
-          <div class="dot"></div>
-          <div>
-            <h3><a href="https://robocontest.uz/profile/boboxon2010" target="_blank" rel="noreferrer">Robocontest Profile</a></h3>
-            <p>Profil va natijalar.</p>
-            <div class="metaRow">
-              <span class="tag">Competitive</span>
-              <span class="tag">Progress</span>
+            <div class="proj-details">
+              <h3><div class="dot"></div> QuantumPulse ERP</h3>
+              <p>Kichik va o'rta biznes tizimlari uchun jarayonlarni avtomatlashtiruvchi zamonaviy SaaS ilovasi.</p>
+              
+              <!-- GitHub API statistikasi chiqadigan joy -->
+              <div class="repoStats" aria-label="Repo stats"></div>
+              
+              <div class="proj-footer-actions">
+                <a class="btn mini-btn primary" href="https://boboxon2010.github.io/quantumpulse-erp" target="_blank" rel="noreferrer">To'liq ochish</a>
+              </div>
             </div>
           </div>
-        </div>
 
+          <!-- 2-Loyiha: RestWaiter Platform -->
+          <div class="proj-card-live" data-repo="Boboxon2010/Mening-Loyihalarim">
+            <div class="iframe-wrapper">
+              <iframe src="https://restwaiteruz.netlify.app" loading="lazy" title="RestWaiter Platform"></iframe>
+            </div>
+            <div class="proj-details">
+              <h3><div class="dot"></div> RestWaiter Platform</h3>
+              <p>Restoran va kafelar uchun real vaqt rejimida buyurtmalarni boshqarish va raqamli menyu tizimi.</p>
+              
+              <div class="repoStats" aria-label="Repo stats"></div>
+              
+              <div class="proj-footer-actions">
+                <a class="btn mini-btn primary" href="https://restwaiteruz.netlify.app" target="_blank" rel="noreferrer">To'liq ochish</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3-Loyiha: Cyrillic-Latin Translator -->
+          <div class="proj-card-live" data-repo="Boboxon2010/Telegram_bot-krill-lotin-krill-translater">
+            <div class="iframe-wrapper">
+              <iframe src="https://telegram-bot-krill-lotin-krill-translater.onrender.com" loading="lazy" title="Cyrillic-Latin Translator WebApp"></iframe>
+            </div>
+            <div class="proj-details">
+              <h3><div class="dot"></div> Krill-Lotin Translator</h3>
+              <p>Matnlarni onlayn transliteratsiya qiluvchi tezkor Web App va Telegram bot ekotizimi.</p>
+              
+              <div class="repoStats" aria-label="Repo stats"></div>
+              
+              <div class="proj-footer-actions">
+                <a class="btn mini-btn primary" href="https://telegram-bot-krill-lotin-krill-translater.onrender.com" target="_blank" rel="noreferrer">Web App</a>
+                <a class="btn mini-btn telegram" href="https://t.me/translater_krill_latin_krill_bot" target="_blank" rel="noreferrer">Botga o'tish</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4-Loyiha: Robocontest Tasks (Sizning algoritmik profilingiz) -->
+          <div class="proj-card-live" data-repo="Boboxon2010/robocontest-tasks">
+            <div class="iframe-wrapper">
+              <!-- Robocontest sahifasini o'zini iframe qilsa bo'ladi, agar u X-Frame ruxsat bersa -->
+              <iframe src="https://github.com/Boboxon2010/robocontest-tasks" loading="lazy" title="Robocontest Tasks"></iframe>
+            </div>
+            <div class="proj-details">
+              <h3><div class="dot"></div> Robocontest Tasks</h3>
+              <p>Robocontest.uz platformasidagi murakkab dasturlash va algoritmik masalalarning optimal yechimlari.</p>
+              
+              <div class="repoStats" aria-label="Repo stats"></div>
+              
+              <div class="proj-footer-actions">
+                <a class="btn mini-btn primary" href="https://github.com/Boboxon2010/robocontest-tasks" target="_blank" rel="noreferrer">Repo manzili</a>
+                <a class="btn mini-btn" href="https://robocontest.uz/profile/boboxon2010" target="_blank" rel="noreferrer">Profil</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
@@ -820,7 +899,7 @@
         el.style.setProperty("--my", my + "%");
       }, {passive:true});
     }
-    document.querySelectorAll(".shine, .btn, .proj").forEach(bindShine);
+    document.querySelectorAll(".shine, .btn, .proj-card-live").forEach(bindShine);
 
     // Scroll reveal
     const io = new IntersectionObserver((entries)=>{
@@ -842,7 +921,7 @@
 
     sections.forEach(s=> secObs.observe(s));
 
-    // 3D tilt (buttons + projects)
+    // 3D tilt (buttons + yangi iframe kartalar)
     function tiltify(selector, maxX=10, maxY=8, lift=3){
       document.querySelectorAll(selector).forEach(el=>{
         let raf = null;
@@ -853,7 +932,7 @@
           if(raf) cancelAnimationFrame(raf);
           raf = requestAnimationFrame(()=>{
             el.style.transform =
-              `translateY(-${lift}px) scale(1.04) perspective(650px) rotateX(${(-y*maxY).toFixed(2)}deg) rotateY(${(x*maxX).toFixed(2)}deg)`;
+              `translateY(-${lift}px) scale(1.02) perspective(650px) rotateX(${(-y*maxY).toFixed(2)}deg) rotateY(${(x*maxX).toFixed(2)}deg)`;
           });
         }
         function onLeave(){
@@ -865,7 +944,7 @@
       });
     }
     tiltify('.btn', 10, 8, 3);
-    tiltify('.proj', 8, 7, 4);
+    tiltify('.proj-card-live', 5, 4, 3); // Iframe kontenti buzilmasligi uchun biroz yumshoqroq tilt berildi
 
     // Skills bar animate on view
     const skillCards = document.querySelectorAll('.skill');
@@ -895,7 +974,7 @@
       });
     });
 
-    // Final Boss: GitHub repo live stats
+    // GitHub repo live stats (YANGILANGAN AVTOMATIK SERVIS)
     async function loadRepoStats(repoFull, mount){
       try{
         const res = await fetch(`https://api.github.com/repos/${repoFull}`, {headers: {"Accept":"application/vnd.github+json"}});
@@ -905,19 +984,13 @@
         const forks = data.forks_count ?? 0;
         const issues = data.open_issues_count ?? 0;
         mount.innerHTML =
-          `<span class="stat">⭐ Stars: ${stars}</span>`+
-          `<span class="stat">🍴 Forks: ${forks}</span>`+
+          `<span class="stat">⭐ Stars: ${stars}</span> `+
+          `<span class="stat">🍴 Forks: ${forks}</span> `+
           `<span class="stat">🐞 Issues: ${issues}</span>`;
       } catch {
         mount.innerHTML = `<span class="stat">Stats: unavailable</span>`;
       }
     }
-    const REPOS = [
-  "robocontest-tasks",
-  "Telegram_bot-krill-lotin-krill-translater",
-  "Mening-Loyihalarim"
-];
-    const USER = "Boboxon2010";
 
     document.querySelectorAll('[data-repo]').forEach(card=>{
       const repo = card.getAttribute('data-repo');
@@ -925,7 +998,7 @@
       if(repo && mount) loadRepoStats(repo, mount);
     });
 
-    // Particles (no library)
+    // Particles background (no library)
     const c = document.getElementById("fx");
     const ctx = c.getContext("2d");
     let W,H,particles;
