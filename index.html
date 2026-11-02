@@ -45,6 +45,7 @@
 
     /* ===== BACKGROUND FX ===== */
     #fx{ position:fixed; inset:0; width:100%; height:100%; z-index:-5; opacity:.92; will-change:transform; }
+    #glass-canvas{ position:fixed; inset:0; width:100%; height:100%; z-index:9998; pointer-events:none; }
 
     .aurora{
       position:fixed; inset:-20%;
@@ -575,6 +576,7 @@
   <div class="loader" id="loader"><div class="spinner" aria-label="Loading"></div></div>
 
   <canvas id="fx"></canvas>
+  <canvas id="glass-canvas" aria-hidden="true"></canvas>
   <div class="aurora"></div>
   <div class="noise"></div>
   <div class="glow" id="glow"></div>
@@ -1058,6 +1060,200 @@
       if(canvasEnabled) initParticles();
     }
     window.addEventListener("resize", resize);
+
+    // Click-based glass cracks with independent local memory.
+    const glassCanvas = document.getElementById("glass-canvas");
+    const glassCtx = glassCanvas.getContext("2d");
+    const crackZones = [];
+    let glassRatio = 1;
+    let glassWidth = innerWidth;
+    let glassHeight = innerHeight;
+
+    function resizeGlassCanvas(){
+      glassRatio = Math.min(devicePixelRatio || 1, 1.5);
+      glassWidth = innerWidth;
+      glassHeight = innerHeight;
+      glassCanvas.width = Math.floor(glassWidth * glassRatio);
+      glassCanvas.height = Math.floor(glassHeight * glassRatio);
+      glassCtx.setTransform(glassRatio, 0, 0, glassRatio, 0, 0);
+      redrawCracks();
+    }
+
+    function drawCrack(zone){
+      const {x, y, radius, seed} = zone;
+      const linesCount = glassWidth < 768 ? 7 : 12;
+      let randomSeed = seed;
+      const random = () => {
+        randomSeed = (randomSeed * 9301 + 49297) % 233280;
+        return randomSeed / 233280;
+      };
+
+      const angles = [];
+      glassCtx.lineCap = "round";
+      glassCtx.lineJoin = "round";
+
+      const spokes = [];
+      for(let i = 0; i < linesCount; i++){
+        const angle = (i / linesCount) * Math.PI * 2 + random() * .25 - .125;
+        const distance = radius * (.75 + random() * .25);
+        const segments = glassWidth < 768 ? 3 : 5;
+        const points = [{x, y}];
+        for(let j = 1; j <= segments; j++){
+          const progress = j / segments;
+          const deviation = (random() * 14 - 7) * progress;
+          points.push({
+            x: x + Math.cos(angle) * distance * progress + Math.sin(angle) * deviation,
+            y: y + Math.sin(angle) * distance * progress - Math.cos(angle) * deviation
+          });
+        }
+        spokes.push({angle, points});
+        angles.push(angle);
+      }
+
+      function strokeSpoke(spoke, color, width, offsetX = 0, offsetY = 0){
+        glassCtx.strokeStyle = color;
+        glassCtx.lineWidth = width;
+        glassCtx.beginPath();
+        glassCtx.moveTo(spoke.points[0].x + offsetX, spoke.points[0].y + offsetY);
+        for(let i = 1; i < spoke.points.length; i++){
+          glassCtx.lineTo(spoke.points[i].x + offsetX, spoke.points[i].y + offsetY);
+        }
+        glassCtx.stroke();
+      }
+
+      // Parallel double-lines create a deep fracture trough with a bright edge.
+      spokes.forEach(spoke => {
+        strokeSpoke(spoke, "rgba(0,0,0,.42)", Math.max(4, radius * .035));
+      });
+      spokes.forEach(spoke => {
+        strokeSpoke(spoke, "rgba(255,255,255,.88)", Math.max(1, radius * .022), .9, -.9);
+      });
+
+      // Small branches split away from the main fracture channels.
+      glassCtx.strokeStyle = "rgba(255,255,255,.66)";
+      glassCtx.lineWidth = 1;
+      glassCtx.beginPath();
+      spokes.forEach(spoke => {
+        for(let i = 1; i < spoke.points.length - 1; i++){
+          if(random() <= .55) continue;
+          const point = spoke.points[i];
+          const branchAngle = spoke.angle + random() * .7 - .35;
+          const branchLength = radius * (.12 + random() * .08);
+          glassCtx.moveTo(point.x, point.y);
+          glassCtx.lineTo(
+            point.x + Math.cos(branchAngle) * branchLength,
+            point.y + Math.sin(branchAngle) * branchLength
+          );
+        }
+      });
+      glassCtx.stroke();
+
+      // Jagged concentric fracture rings connect the spokes into a spiderweb.
+      glassCtx.strokeStyle = "rgba(0,0,0,.24)";
+      glassCtx.lineWidth = 2.2;
+      glassCtx.shadowBlur = 2;
+      glassCtx.beginPath();
+      const ringCount = glassWidth < 768 ? 2 : 4;
+      for(let ring = 1; ring <= ringCount; ring++){
+        const ringRadius = radius * (ring / (ringCount + 1)) * (.88 + random() * .12);
+        for(let i = 0; i < angles.length; i++){
+          const a1 = angles[i];
+          const a2 = angles[(i + 1) % angles.length];
+          const gap = a2 < a1 ? a2 + Math.PI * 2 - a1 : a2 - a1;
+          const midAngle = a1 + gap * (.45 + random() * .1);
+          const midRadius = ringRadius * (.86 + random() * .12);
+          glassCtx.moveTo(x + Math.cos(a1) * ringRadius, y + Math.sin(a1) * ringRadius);
+          glassCtx.lineTo(x + Math.cos(midAngle) * midRadius, y + Math.sin(midAngle) * midRadius);
+          glassCtx.lineTo(x + Math.cos(a2) * ringRadius, y + Math.sin(a2) * ringRadius);
+        }
+      }
+      glassCtx.stroke();
+      glassCtx.strokeStyle = "rgba(255,255,255,.7)";
+      glassCtx.lineWidth = 1.1;
+      glassCtx.beginPath();
+      for(let ring = 1; ring <= ringCount; ring++){
+        const ringRadius = radius * (ring / (ringCount + 1)) * (.88 + random() * .12);
+        for(let i = 0; i < angles.length; i++){
+          const a1 = angles[i];
+          const a2 = angles[(i + 1) % angles.length];
+          const gap = a2 < a1 ? a2 + Math.PI * 2 - a1 : a2 - a1;
+          const midAngle = a1 + gap * (.45 + random() * .1);
+          const midRadius = ringRadius * (.86 + random() * .12);
+          glassCtx.moveTo(x + Math.cos(a1) * ringRadius + .5, y + Math.sin(a1) * ringRadius - .5);
+          glassCtx.lineTo(x + Math.cos(midAngle) * midRadius + .5, y + Math.sin(midAngle) * midRadius - .5);
+          glassCtx.lineTo(x + Math.cos(a2) * ringRadius + .5, y + Math.sin(a2) * ringRadius - .5);
+        }
+      }
+      glassCtx.stroke();
+
+      // Dense impact dust and small glass shards around the strike point.
+      glassCtx.fillStyle = "rgba(255,255,255,.4)";
+      glassCtx.strokeStyle = "rgba(255,255,255,.92)";
+      glassCtx.lineWidth = 3;
+      glassCtx.beginPath();
+      glassCtx.arc(x, y, radius * .06, 0, Math.PI * 2);
+      glassCtx.fill();
+      glassCtx.stroke();
+      glassCtx.fillStyle = "rgba(255,255,255,.82)";
+      const shards = glassWidth < 768 ? 12 : 20;
+      for(let i = 0; i < shards; i++){
+        const angle = random() * Math.PI * 2;
+        const distance = radius * (.08 + random() * .22);
+        const size = .7 + random() * 2;
+        const shardX = x + Math.cos(angle) * distance;
+        const shardY = y + Math.sin(angle) * distance;
+        glassCtx.save();
+        glassCtx.translate(shardX, shardY);
+        glassCtx.rotate(angle + random());
+        glassCtx.fillRect(-size * 1.8, -size * .45, size * 3.6, size * .9);
+        glassCtx.restore();
+      }
+      glassCtx.shadowBlur = 0;
+      glassCtx.lineWidth = 1;
+    }
+
+    function redrawCracks(){
+      glassCtx.clearRect(0, 0, glassWidth, glassHeight);
+      crackZones.forEach(drawCrack);
+    }
+
+    function removeCrack(id){
+      const index = crackZones.findIndex(zone => zone.id === id);
+      if(index !== -1){
+        crackZones.splice(index, 1);
+        redrawCracks();
+      }
+    }
+
+    function handleCrackPointer(e){
+      const target = e.target;
+      if(target.closest("a, button, input, textarea, select, iframe")) return;
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const baseRadius = glassWidth < 768 ? 40 : 60;
+      const existing = crackZones.find(zone => Math.hypot(zone.x - x, zone.y - y) < 45);
+
+      if(existing){
+        existing.radius = Math.min(existing.radius + 30, 180);
+        clearTimeout(existing.timerId);
+        existing.timerId = setTimeout(() => removeCrack(existing.id), 6000);
+      }else{
+        const zone = {
+          id: `${Date.now()}-${Math.random()}`,
+          x, y, radius: baseRadius,
+          seed: Math.floor(Math.random() * 100000),
+          timerId: null
+        };
+        zone.timerId = setTimeout(() => removeCrack(zone.id), 6000);
+        crackZones.push(zone);
+      }
+      redrawCracks();
+    }
+
+    resizeGlassCanvas();
+    window.addEventListener("resize", resizeGlassCanvas);
+    window.addEventListener("pointerdown", handleCrackPointer, {passive:true});
 
     function initParticles(){
       const count = Math.min(36, Math.max(18, Math.floor(innerWidth/32)));
